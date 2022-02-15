@@ -1,0 +1,48 @@
+{
+  "name": "solid-split-component",
+  "version": "0.1.3",
+  "description": "The <Split /> component wraps multiple children components to create a resizeable split view. The component is a light wrapper around the Split.js library and accepts (mostly) the same options.",
+  "files": [
+    "dist"
+  ],
+  "main": "dist/esm/index.js",
+  "module": "dist/esm/index.js",
+  "types": "dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "solid": "./dist/source/index.jsx",
+      "default": "./dist/esm/index.js"
+    },
+    "./style.css": "./dist/esm/style.css"
+  },
+  "scripts": {
+    "build": "rollup -c"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sacarvy/solid-split-component.git"
+  },
+  "author": "sacarvy",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sacarvy/solid-split-component/issues"
+  },
+  "homepage": "https://github.com/sacarvy/solid-split-component#readme",
+  "peerDependencies": {
+    "solid-js": "^1.3.7"
+  },
+  "devDependencies": {
+    "rollup": "^2.67.2",
+    "rollup-preset-solid": "^1.2.2",
+    "solid-js": "^1.3.7",
+    "typescript": "^4.5.5"
+  },
+  "dependencies": {
+    "rollup-plugin-css-only": "^3.1.0",
+    "solid-split-component": "^0.1.3",
+    "split.js": "^1.6.5"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
