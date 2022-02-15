@@ -1,11 +1,10 @@
-import {  createSignal, onMount } from "solid-js";
+import {  createEffect, createSignal, onCleanup, onMount } from "solid-js";
 import { splitProps } from "solid-js";
 import { Dynamic } from "solid-js/web";
 import Split from "split.js";
 
-import "./style.css"
-
 import { createRef, DynamicNode, DynamicProps, ValidConstructor, WithRef } from "./utils/dynamic-props";
+
 // .gutter.gutter-horizontal {
 //     width: 1px;
 //     margin: 0 -5px;
@@ -98,32 +97,13 @@ export type SplitProps<T extends ValidConstructor = "div"> = {
 export function SplitWindow<V, T extends ValidConstructor = "div">(params: SplitProps<T>) {
 	// const children = solidChildren(() => params.children);
 	const [internalRef, setInternalRef] = createSignal<DynamicNode<T>>();
-    if(params.mode !== 'default'){
+    if(params.mode === 'skeleton'){
         params.elementStyle= (dimension, size, gutterSize) => ({
                 "flex-basis": "calc(" + size + "%)"
         });
 		params.gutterStyle=(dimension, gutterSize) => ({
 				"flex-basis": gutterSize + "px",
 		});
-		params.onDragStart = () => {
-			if(params.onDragStart){
-				params.onDragStart();
-			}
-			params.direction === 'horizontal' ? (
-				document.querySelector('.gutter')?.classList.add('gutter-enchanced-x')
-			) : (
-				document.querySelector('.gutter')?.classList.add('gutter-enchanced-y')
-			);
-		}
-		params.onDragEnd = () => {
-			if(params.onDragEnd)
-				params.onDragEnd();
-			params.direction === 'horizontal' ? (
-				document.querySelector('.gutter')?.classList.remove('gutter-enchanced-x')
-			) : (
-				document.querySelector('.gutter')?.classList.remove('gutter-enchanced-y')
-			);
-		}
     }
 	const [local, others] = splitProps(params, [
 		"sizes",
@@ -145,11 +125,29 @@ export function SplitWindow<V, T extends ValidConstructor = "div">(params: Split
 		"collapsed",
 		"destroy",
 	]);
+	let ref;
 	onMount(() => {
-        const ref = internalRef();
-        // @ts-ignore
-		Split(  ref.children , local);
+	    ref = internalRef();
 	});
+	createEffect(() => {
+		let split = Split(  ref.children , local);
+		onCleanup(() => split.destroy());
+	})
+	createEffect(()=>{
+		params.direction === 'horizontal' ? (
+			Array.from(document.getElementsByClassName('gutter')).forEach((gutter)=>{
+				if(gutter.classList.contains('gutter-enchanced-y'))
+					gutter.classList.remove('gutter-enchanced-y')
+				gutter.classList.add('gutter-enchanced-x');
+			})
+		) : (
+			Array.from(document.getElementsByClassName('gutter')).forEach((gutter)=>{
+				if(gutter.classList.contains('gutter-enchanced-x'))
+					gutter.classList.remove('gutter-enchanced-x')
+				gutter.classList.add('gutter-enchanced-y')
+			})
+		);
+	})
 	return (
 		<Dynamic
 			component={params.as ?? "div"}
